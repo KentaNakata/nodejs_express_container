@@ -1,0 +1,23 @@
+services:
+  express_service:            # サービス名
+    image: express_image      # イメージ名
+    container_name: express   # コンテナ名
+    working_dir: /usr/src/app # コンテナの作業ディレクトリ
+    build:
+      context: .              # ビルドコンテキスト
+      dockerfile: Dockerfile  # Dockerfileのパス
+    ports:
+      - "8080:8000"           # ポートの割り当て (ホスト側:コンテナ側)
+#    volumes:
+#      - type: bind            # マウントタイプ
+#        source: ./app         # ホストのパス
+#        target: /usr/src/app  # コンテナのパス
+#    tty: true                 # コンテナを起動させ続ける
+
+
+
+# デバッグ用コマンド
+# docker compose up --build
+
+# 本番用コマンド
+# ddocker compose up -d --build
