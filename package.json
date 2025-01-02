@@ -2,20 +2,21 @@
     "name": "express",
     "version": "1.0.0",
     "description": "",
-    "main": "resource/main.js",
+    "main": "main.js",
     "scripts": {
-        "start": "node resource/main.js"
+        "start": "node main.js"
     },
     "author": "",
     "license": "ISC",
     "dependencies": {
-        "express": "^4.21.2"
+        "express": "^4.21.2",
+        "ejs": "*"
     },
     "window": {
         "title": "",
         "width": 816,
         "height": 624,
         "position": "center",
-        "icon": "resource/icon/icon.png"
+        "icon": "icon/icon.png"
     }
 }
