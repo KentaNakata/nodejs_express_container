@@ -1,85 +1,57 @@
-//モジュールの要求
-const express = require("express");
-const app = express();
-
-app.use(express.urlencoded({ extended: true }));
-app.set("views", "./views");
-app.set("view engine", "ejs");
+import app from "./initTest.js";
+import http from "http";
+import { WebSocketServer } from "ws";
 
 //サーバーの起動
-const server = app.listen(8000, function () {
+const server = http.createServer(app);
+server.listen(8000, () => {
   console.log("server started");
   console.log("port:" + server.address().port);
 });
 
-//Hello World
-app.get("/", (req, res) => {
-  console.log("/ is called");
-  res.status(200).send("Hello World");
+const wss = new WebSocketServer({ server });
+
+wss.on("connection", (ws) => {
+  console.log("Client connected");
+
+  ws.send("Hello, Client!");
+
+  ws.on("message", (message) => {
+    console.log("Message from client: ", message);
+  });
 });
 
-//GETのテスト
-app.get("/test", async function (req, res, next) {
-  console.log("/test is called; GET request: " + JSON.stringify(req.query));
-  const note = req.query.note || "none";
-  res.send(
-    `<p>test</p>
-    <p>GET request: note=${note}</p>` + JSON.stringify(req.query)
-  );
-});
+app.get("/ws", (req, res, next) => {
+  res.send(`<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WebSocket Client</title>
+</head>
+<body>
+  <h1>WebSocket Test</h1>
+  <script>
+    const socket = new WebSocket("ws://localhost:8080");
 
-//POSTのテスト
-app.post("/test", async function (req, res, next) {
-  console.log("/test is called; POST request: " + JSON.stringify(req.body));
-  const name = req.body.name || "none";
-  const age = req.body.age || "none";
-  res.send(
-    `<p>test</p>
-    <p>POST request: name=${name}, age=${age}</p>` + JSON.stringify(req.body)
-  );
-});
+    socket.onopen = () => {
+      console.log("Connected to WebSocket server");
+      socket.send("Hello, Server!");
+    };
 
-//リダイレクトのテスト
-app.get("/test/redirect_tmp", async function (req, res, next) {
-  res.redirect("/test?note=hello"); //デフォルトはstatus=302
-});
+    socket.onmessage = (event) => {
+      console.log("Message from server: ", event.data);
+    };
 
-//リダイレクトのテスト
-app.get("/test/redirect", async function (req, res, next) {
-  res.redirect(301, "/test?note=hello"); //status=301を指定
-});
+    socket.onerror = (error) => {
+      console.log("WebSocket Error: ", error);
+    };
 
-//POSTリクエストのテスト
-app.get("/test/request", async function (req, res, next) {
-  res.send(`
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <title>Form Example</title>
-    </head>
-    <body>
-        <form action="/test" method="post">
-            <input type="text" name="name" placeholder="name">
-            <input type="text" name="age" placeholder="age">
-            <input type="submit" value="submit">
-        </form>
-    </body>
-    </html>
-  `);
-});
-
-//レンダリングのテスト
-app.get("/test/render", async function (req, res, next) {
-  const note = req.query.note || "none";
-  res.render("test/render.ejs", { note: note });
-});
-
-//jsonレスポンスのテスト
-app.get("/test/json", (req, res) => {
-  const note = req.query.note || "none";
-  const data = {
-    title: "test",
-    note: note,
-  };
-  res.json(data);
+    socket.onclose = () => {
+      console.log("WebSocket connection closed");
+    };
+  </script>
+</body>
+</html>
+`);
 });
