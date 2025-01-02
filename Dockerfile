@@ -11,7 +11,7 @@ COPY package.json package-lock.json .
 # package.json, package-lock.json に基づいて、依存するモジュールをインストール
 RUN npm install
 # 必要なファイルをホストからコンテナへコピー
-COPY resource/* .
+COPY resource/ .
 
 # ポートの解放
 EXPOSE 8000

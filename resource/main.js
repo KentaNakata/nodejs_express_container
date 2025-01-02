@@ -3,6 +3,8 @@ const express = require("express");
 const app = express();
 
 app.use(express.urlencoded({ extended: true }));
+app.set("views", "./views");
+app.set("view engine", "ejs");
 
 //サーバーの起動
 const server = app.listen(8000, function () {
@@ -20,7 +22,10 @@ app.get("/", (req, res) => {
 app.get("/test", async function (req, res, next) {
   console.log("/test is called; GET request: " + JSON.stringify(req.query));
   const note = req.query.note || "none";
-  res.send(`test; GET request: note=${note}, ` + JSON.stringify(req.query));
+  res.send(
+    `<p>test</p>
+    <p>GET request: note=${note}</p>` + JSON.stringify(req.query)
+  );
 });
 
 //POSTのテスト
@@ -29,7 +34,8 @@ app.post("/test", async function (req, res, next) {
   const name = req.body.name || "none";
   const age = req.body.age || "none";
   res.send(
-    `test; POST request: name=${name}, age=${age}, ` + JSON.stringify(req.body)
+    `<p>test</p>
+    <p>POST request: name=${name}, age=${age}</p>` + JSON.stringify(req.body)
   );
 });
 
@@ -63,15 +69,17 @@ app.get("/test/request", async function (req, res, next) {
 });
 
 //レンダリングのテスト
-app.get("/test/res", async function (req, res, next) {
-  res.send("test; GET request: note=<%= note %>");
+app.get("/test/render", async function (req, res, next) {
+  const note = req.query.note || "none";
+  res.render("test/render.ejs", { note: note });
 });
 
 //jsonレスポンスのテスト
 app.get("/test/json", (req, res) => {
-  console.log("/test/json is called");
+  const note = req.query.note || "none";
   const data = {
-    message: "test",
+    title: "test",
+    note: note,
   };
   res.json(data);
 });
