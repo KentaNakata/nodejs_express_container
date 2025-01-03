@@ -1,13 +1,13 @@
-import app from "./express_base.js";
+import express_base from "./express_base.js";
 
 //Hello World
-app.get("/", (req, res, next) => {
+express_base.get("/", (req, res, next) => {
   console.log("/ is called");
   res.status(200).send("Hello World");
 });
 
 //GETのテスト
-app.get("/test", async function (req, res, next) {
+express_base.get("/test", async function (req, res, next) {
   console.log("/test is called; GET request: " + JSON.stringify(req.query));
   const note = req.query.note || "none";
   res.send(
@@ -17,7 +17,7 @@ app.get("/test", async function (req, res, next) {
 });
 
 //POSTのテスト
-app.post("/test", async function (req, res, next) {
+express_base.post("/test", async function (req, res, next) {
   console.log("/test is called; POST request: " + JSON.stringify(req.body));
   const name = req.body.name || "none";
   const age = req.body.age || "none";
@@ -28,17 +28,17 @@ app.post("/test", async function (req, res, next) {
 });
 
 //リダイレクトのテスト
-app.get("/test/redirect_tmp", async function (req, res, next) {
+express_base.get("/test/redirect_tmp", async function (req, res, next) {
   res.redirect("/test?note=hello"); //デフォルトはstatus=302
 });
 
 //リダイレクトのテスト
-app.get("/test/redirect", async function (req, res, next) {
+express_base.get("/test/redirect", async function (req, res, next) {
   res.redirect(301, "/test?note=hello"); //status=301を指定
 });
 
 //POSTリクエストのテスト
-app.get("/test/request", async function (req, res, next) {
+express_base.get("/test/request", async function (req, res, next) {
   res.send(`
     <!DOCTYPE html>
     <html>
@@ -57,13 +57,13 @@ app.get("/test/request", async function (req, res, next) {
 });
 
 //レンダリングのテスト
-app.get("/test/render", async function (req, res, next) {
+express_base.get("/test/render", async function (req, res, next) {
   const note = req.query.note || "none";
   res.render("test/render", { note: note });
 });
 
 //jsonレスポンスのテスト
-app.get("/test/json", (req, res, next) => {
+express_base.get("/test/json", (req, res, next) => {
   const note = req.query.note || "none";
   const data = {
     title: "test",
@@ -72,4 +72,4 @@ app.get("/test/json", (req, res, next) => {
   res.json(data);
 });
 
-export default app;
+export default express_base;
