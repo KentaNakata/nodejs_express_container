@@ -155,8 +155,8 @@ class Player {
       this.state === Player.stateType.waiting
     ) {
       //対戦中の場合はマッチングを解消して退出する
-      this.player.dematch();
-      this.player.exit();
+      this.dematch();
+      this.exit();
 
       //対戦相手もマッチングを解消する
       //退出者(このプレイヤー)のスコアは対戦相手に引き継ぐ
@@ -167,7 +167,7 @@ class Player {
       this.state === Player.stateType.free
     ) {
       //退出する
-      this.player.exit();
+      this.exit();
     }
   }
 

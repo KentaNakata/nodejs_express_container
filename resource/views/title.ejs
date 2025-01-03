@@ -64,8 +64,8 @@
         // 受信したメッセージをページに表示
         function displayMessage(message) {
             const newMessage = document.createElement("p");
-            newMessage.textContent = message;
-            messagesDiv.appendChild("[Server]: " + newMessage);
+            newMessage.textContent = "[Server]: " + message;
+            messagesDiv.appendChild(newMessage);
             messagesDiv.scrollTop = messagesDiv.scrollHeight;  // 最新のメッセージを表示
         }
 
@@ -88,7 +88,11 @@
 
             // メッセージを送信
             socket.send(JSON.stringify(data));
-            document.getElementById("messageInput").value = "";  // 入力欄をクリア
+
+            // 入力欄をクリア
+            document.getElementById("messageInput").value = "";
+            document.getElementById("name").value = "";
+            document.getElementById("age").value = "";
         });
     </script>
 </body>

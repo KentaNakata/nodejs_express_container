@@ -24,19 +24,23 @@ wss.on("listening", () => {
 //サーバーにクライアントが接続したときの処理
 wss.on("connection", async (ws) => {
   console.log("A new player connected to WebSocket server");
+  ws.send("Please send your name and age");
 
   let player = null;
-
-  ws.send("Please send your name and age");
 
   await new Promise((resolve) => {
     // プレイヤー情報の待機・受信
     ws.on("message", (info) => {
-      console.log("Player's info: ", info.toString());
-      const parsedInfo = JSON.parse(info.toString());
-
       // プレイヤーの登録
+      const parsedInfo = JSON.parse(info.toString());
       player = pmm.addPlayerByInfo(parsedInfo);
+
+      console.log(
+        `Player sent the information (name=${player.name}, age=${player.age})`
+      );
+      ws.send(
+        `Thank you for your information (You: name=${player.name}, age=${player.age})`
+      );
 
       // 待機を終了して処理を続ける
       resolve();
@@ -45,12 +49,15 @@ wss.on("connection", async (ws) => {
 
   ws.on("close", () => {
     console.log("Player disconnected");
+    ws.send("Good bye");
     player.exitAnyway();
   });
 
   while (true) {
     //マッチング (対戦相手が見つかるまで待機)
     while (player.state === Player.stateType.findingOpponent) {
+      ws.send("We are finding your opponent...");
+
       //待機
       await new Promise((resolve) => setTimeout(resolve, 5000));
 
@@ -59,6 +66,10 @@ wss.on("connection", async (ws) => {
     }
 
     console.log("Matched");
+    ws.send("We found your opponent");
+    ws.send(
+      `(Your opponent: name=${player.opponent.name}, age=${player.opponent.age})`
+    );
 
     //const info = JSON.stringify();
     //ws.send("Hello, Client!");
@@ -74,7 +85,10 @@ wss.on("connection", async (ws) => {
     }
 
     console.log("Finished");
+    ws.send(`The battle finished (Score: ${player.score})`);
+
     player.restartFindingOpponent();
+    pmm.addPlayer(player);
   }
 });
 
