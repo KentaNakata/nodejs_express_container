@@ -3,7 +3,7 @@ class Player {
   #name;
   #age;
   #score;
-  #state = stateType.findingOpponent; //プレイヤーの状態
+  #state = Player.stateType.findingOpponent; //プレイヤーの状態
   #opponent = null; //対戦相手
   #lastOpponent = null; //直前の対戦相手
   #log = [];
@@ -53,14 +53,14 @@ class Player {
 
   match(nextStateType, opponent) {
     //findingOpponent 状態でなければエラー
-    if (this.state !== this.stateType.findingOpponent) {
+    if (this.state !== Player.stateType.findingOpponent) {
       throw new Error("This player is not finding an opponent");
     }
 
     //active または waiting 状態にする
     if (
-      nextStateType === this.stateType.active ||
-      nextStateType === this.stateType.waiting
+      nextStateType === Player.stateType.active ||
+      nextStateType === Player.stateType.waiting
     ) {
       this.#setState(nextStateType);
     } else {
@@ -86,29 +86,29 @@ class Player {
 
   activate() {
     //waiting 状態でなければエラー
-    if (this.state !== this.stateType.waiting) {
+    if (this.state !== Player.stateType.waiting) {
       throw new Error("This player is not waiting");
     }
 
     //active 状態にする
-    this.#setState(this.stateType.active);
+    this.#setState(Player.stateType.active);
   }
 
   deactivate() {
     //active 状態でなければエラー
-    if (this.state !== this.stateType.active) {
+    if (this.state !== Player.stateType.active) {
       throw new Error("This player is not active");
     }
 
     //waiting 状態にする
-    this.#setState(this.stateType.waiting);
+    this.#setState(Player.stateType.waiting);
   }
 
   dematch(givenScore = 0) {
     //active または waiting 状態でなければエラー
     if (
-      this.state !== this.stateType.active &&
-      this.state !== this.stateType.waiting
+      this.state !== Player.stateType.active &&
+      this.state !== Player.stateType.waiting
     ) {
       throw new Error("This player is not matching");
     }
@@ -117,42 +117,42 @@ class Player {
     this.#score += parseFloat(givenScore, 10);
 
     //free 状態にする
-    this.#setState(this.stateType.free);
+    this.#setState(Player.stateType.free);
 
     //対戦相手の設定を消す
     this.#lastOpponent = this.opponent;
     this.#opponent = null;
 
-    this.#pushLog("Matching has been over");
+    this.#pushLog(`Matching has been over (Score: ${this.#score})`);
   }
 
   restartFindingOpponent() {
     //free 状態でなければエラー
-    if (this.state !== this.stateType.free) {
+    if (this.state !== Player.stateType.free) {
       throw new Error("This player is not free");
     }
 
     //findingOpponent 状態にする
-    this.#setState(this.stateType.findingOpponent);
+    this.#setState(Player.stateType.findingOpponent);
   }
 
   exit() {
     //findingOpponent または free 状態でなければエラー
     if (
-      this.state !== this.stateType.findingOpponent &&
-      this.state !== this.stateType.free
+      this.state !== Player.stateType.findingOpponent &&
+      this.state !== Player.stateType.free
     ) {
       throw new Error("This player is not in a state to exit");
     }
 
     //exited 状態にする
-    this.#setState(this.stateType.exited);
+    this.#setState(Player.stateType.exited);
   }
 
   exitAnyway() {
     if (
-      this.state === this.stateType.active ||
-      this.state === this.stateType.waiting
+      this.state === Player.stateType.active ||
+      this.state === Player.stateType.waiting
     ) {
       //対戦中の場合はマッチングを解消して退出する
       this.player.dematch();
@@ -163,8 +163,8 @@ class Player {
       const score = this.score + 1;
       this.lastOpponent.dematch(score);
     } else if (
-      this.state === this.stateType.findingOpponent ||
-      this.state === this.stateType.free
+      this.state === Player.stateType.findingOpponent ||
+      this.state === Player.stateType.free
     ) {
       //退出する
       this.player.exit();

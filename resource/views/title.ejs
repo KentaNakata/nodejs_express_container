@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matching Chat Game</title>
+    <style>
+        #messages {
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            height: 200px;
+            overflow-y: scroll;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Matching Chat Game</h1>
+
+    <b>Message:</b><br>
+    <div id="messages"></div>
+
+    <b>Message Input:</b><br>
+    <textarea id="messageInput" placeholder="Type your message here..."></textarea><br>
+
+    <b>Name:</b> <span id="name">undefined</span><br>
+    <textarea id="nameInput" placeholder="Type your name here..."></textarea><br>
+
+    <b>Age:</b> <span id="age">undefined</span><br>
+    <textarea id="ageInput" placeholder="Type your age here..."></textarea><br>
+
+    <br><button id="sendButton">Send</button><br>
+
+    <script>
+        messagesDiv = document.getElementById("messages");
+        nameInput = document.getElementById("nameInput");
+        ageInput = document.getElementById("ageInput");
+
+        // WebSocketの接続
+        const socket = new WebSocket("ws://localhost:8080");
+
+        // 接続が開いた時の処理
+        socket.onopen = () => {
+            displayMessage("Connected to WebSocket server");
+        };
+
+        // メッセージ受信時の処理
+        socket.onmessage = (event) => {
+            displayMessage(event.data);
+        };
+
+        // エラー発生時の処理
+        socket.onerror = (error) => {
+            displayMessage("WebSocket Error: ", error);
+        };
+
+        // 接続が閉じられた時の処理
+        socket.onclose = () => {
+            displayMessage("WebSocket connection closed");
+        };
+
+        // 受信したメッセージをページに表示
+        function displayMessage(message) {
+            const newMessage = document.createElement("p");
+            newMessage.textContent = message;
+            messagesDiv.appendChild("[Server]: " + newMessage);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;  // 最新のメッセージを表示
+        }
+
+        // 受信したメッセージをページに表示
+        function displayInfo(message) {
+            document.getElementById("name").innerHTML = nameInput.value;
+            document.getElementById("age").innerHTML = ageInput.value;
+            nameInput.disabled = true;
+            ageInput.disabled = true;
+        }
+
+        // 送信ボタンのクリック処理
+        document.getElementById("sendButton").addEventListener("click", () => {
+            displayInfo();
+            const data = {
+                message: document.getElementById("messageInput").value,
+                name: document.getElementById("name").innerHTML,
+                age: document.getElementById("age").innerHTML
+            };
+
+            // メッセージを送信
+            socket.send(JSON.stringify(data));
+            document.getElementById("messageInput").value = "";  // 入力欄をクリア
+        });
+    </script>
+</body>
+
+</html>

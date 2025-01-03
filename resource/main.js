@@ -1,56 +1,94 @@
-import app from "./express_test.js";
+import express_test from "./express_test.js";
+import Player from "./Player.js";
+import PlayerMatchingMaker from "./PlayerMatchingMaker.js";
+
 import http from "http";
-import { WebSocketServer } from "ws";
+import { WebSocketServer as WSServer } from "ws";
 
 //サーバーの起動
-const server = http.createServer(app);
-server.listen(8000, () => {
-  console.log("server started");
-  console.log("port:" + server.address().port);
+const exs = http.createServer(express_test);
+exs.listen(8000, () => {
+  console.log("HTTP Express server is opening");
+  console.log("Port: " + exs.address().port);
 });
-const wss = new WebSocketServer({ server });
+const wss = new WSServer({ server: exs });
 
-wss.on("connection", (ws) => {
-  console.log("Client connected");
+let pmm = null;
 
-  ws.send("Hello, Client!");
+//サーバー起動時の処理
+wss.on("listening", () => {
+  console.log("WebSocket server is opening");
+  pmm = new PlayerMatchingMaker();
+});
 
-  ws.on("message", (message) => {
-    console.log("Message from client: ", message);
+//サーバーにクライアントが接続したときの処理
+wss.on("connection", async (ws) => {
+  console.log("A new player connected to WebSocket server");
+
+  let player = null;
+
+  ws.send("Please send your name and age");
+
+  await new Promise((resolve) => {
+    // プレイヤー情報の待機・受信
+    ws.on("message", (info) => {
+      console.log("Player's info: ", info.toString());
+      const parsedInfo = JSON.parse(info.toString());
+
+      // プレイヤーの登録
+      player = pmm.addPlayerByInfo(parsedInfo);
+
+      // 待機を終了して処理を続ける
+      resolve();
+    });
   });
+
+  ws.on("close", () => {
+    console.log("Player disconnected");
+    player.exitAnyway();
+  });
+
+  while (true) {
+    //マッチング (対戦相手が見つかるまで待機)
+    while (player.state === Player.stateType.findingOpponent) {
+      //待機
+      await new Promise((resolve) => setTimeout(resolve, 5000));
+
+      //接続確認
+      ws.ping();
+    }
+
+    console.log("Matched");
+
+    //const info = JSON.stringify();
+    //ws.send("Hello, Client!");
+    //ws.terminate();
+
+    //対戦 ()
+    while (player.state !== Player.stateType.free) {
+      //待機
+      await new Promise((resolve) => setTimeout(resolve, 5000));
+
+      //接続確認
+      ws.ping();
+    }
+
+    console.log("Finished");
+    player.restartFindingOpponent();
+  }
 });
 
-app.get("/ws", (req, res, next) => {
-  res.send(`<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WebSocket Client</title>
-</head>
-<body>
-  <h1>WebSocket Test</h1>
-  <script>
-    const socket = new WebSocket("ws://localhost:8080");
+//サーバーエラー時の処理
+wss.on("error", (err) => {
+  console.log("WebSocket server error: ", err);
+});
 
-    socket.onopen = () => {
-      console.log("Connected to WebSocket server");
-      socket.send("Hello, Server!");
-    };
+//サーバー終了時の処理
+wss.on("close", () => {
+  console.log("WebSocket server is closing");
+});
 
-    socket.onmessage = (event) => {
-      console.log("Message from server: ", event.data);
-    };
-
-    socket.onerror = (error) => {
-      console.log("WebSocket Error: ", error);
-    };
-
-    socket.onclose = () => {
-      console.log("WebSocket connection closed");
-    };
-  </script>
-</body>
-</html>
-`);
+//クライアント用タイトル画面
+express_test.get("/play", (req, res, next) => {
+  res.render("title");
 });
