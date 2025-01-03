@@ -43,7 +43,7 @@ express_base.get("/test/request", async function (req, res, next) {
     <!DOCTYPE html>
     <html>
     <head>
-        <title>Form Example</title>
+        <title>POST Request Form</title>
     </head>
     <body>
         <form action="/test" method="post">
