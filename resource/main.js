@@ -1,4 +1,4 @@
-import app from "./initTest.js";
+import app from "./express_test.js";
 import http from "http";
 import { WebSocketServer } from "ws";
 
@@ -8,7 +8,6 @@ server.listen(8000, () => {
   console.log("server started");
   console.log("port:" + server.address().port);
 });
-
 const wss = new WebSocketServer({ server });
 
 wss.on("connection", (ws) => {
