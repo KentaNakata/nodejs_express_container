@@ -54,15 +54,25 @@ wss.on("connection", async (ws) => {
   });
 
   while (true) {
-    //マッチング (対戦相手が見つかるまで待機)
-    while (
-      player.state !== Player.stateType.active ||
-      player.state !== Player.stateType.waiting
-    ) {
+    //マッチング
+    while (true) {
       ws.send("We are finding your opponent...");
 
       //待機
       await new Promise((resolve) => setTimeout(resolve, 5000));
+
+      //退出確認
+      if (player.state === Player.stateType.exited) {
+        return;
+      }
+
+      //マッチング成立の確認
+      if (
+        player.state === Player.stateType.active ||
+        player.state === Player.stateType.waiting
+      ) {
+        break;
+      }
 
       //接続確認
       ws.ping();
@@ -71,15 +81,22 @@ wss.on("connection", async (ws) => {
     ws.send(
       `We found your opponent (Your opponent: name=${player.opponent.name}, age=${player.opponent.age})`
     );
+    ws.send(`Your current state: ${player.state}`);
 
-    //const info = JSON.stringify();
-    //ws.send("Hello, Client!");
-    //ws.terminate();
-
-    //対戦 ()
-    while (player.state !== Player.stateType.free) {
+    //対戦
+    while (true) {
       //待機
       await new Promise((resolve) => setTimeout(resolve, 5000));
+
+      //退出確認
+      if (player.state === Player.stateType.exited) {
+        return;
+      }
+
+      //対戦終了の確認
+      if (player.state === Player.stateType.free) {
+        break;
+      }
 
       //接続確認
       ws.ping();
