@@ -47,6 +47,10 @@ class PlayerMatchingMaker {
     // 排他制御で安全にマッチングを実行する
     await this.#acquireLock();
 
+    this.#players = this.#players.filter(
+      (player) => player.state === Player.stateType.findingOpponent
+    );
+
     const pairs = [];
     try {
       while (this.#players.length >= 2) {

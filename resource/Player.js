@@ -74,7 +74,7 @@ class Player {
       throw new Error("The given opponent is invalid");
     }
 
-    //対戦相手と同じ状態にしてはいけない (片方が active で片方が waiting)
+    //対戦相手と同じ状態にしてはいけない (先攻が active で後攻が waiting)
     if (this.state === opponent.state) {
       throw new Error("This player and the opponent are in the same state");
     }

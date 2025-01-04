@@ -13,12 +13,5 @@
         "express": "^4.21.2",
         "ejs": "*",
         "ws": "*"
-    },
-    "window": {
-        "title": "",
-        "width": 816,
-        "height": 624,
-        "position": "center",
-        "icon": "icon/icon.png"
     }
 }

@@ -55,7 +55,10 @@ wss.on("connection", async (ws) => {
 
   while (true) {
     //マッチング (対戦相手が見つかるまで待機)
-    while (player.state === Player.stateType.findingOpponent) {
+    while (
+      player.state !== Player.stateType.active ||
+      player.state !== Player.stateType.waiting
+    ) {
       ws.send("We are finding your opponent...");
 
       //待機
@@ -65,10 +68,8 @@ wss.on("connection", async (ws) => {
       ws.ping();
     }
 
-    console.log("Matched");
-    ws.send("We found your opponent");
     ws.send(
-      `(Your opponent: name=${player.opponent.name}, age=${player.opponent.age})`
+      `We found your opponent (Your opponent: name=${player.opponent.name}, age=${player.opponent.age})`
     );
 
     //const info = JSON.stringify();
@@ -84,7 +85,6 @@ wss.on("connection", async (ws) => {
       ws.ping();
     }
 
-    console.log("Finished");
     ws.send(`The battle finished (Score: ${player.score})`);
 
     player.restartFindingOpponent();

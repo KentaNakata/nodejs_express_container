@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Matching Chat Game</title>
+    <title>Matching Game</title>
     <style>
         #messages {
             margin-bottom: 20px;
@@ -17,7 +17,7 @@
 </head>
 
 <body>
-    <h1>Matching Chat Game</h1>
+    <h1>Matching Game</h1>
 
     <b>Message:</b><br>
     <div id="messages"></div>
@@ -48,7 +48,7 @@
 
         // メッセージ受信時の処理
         socket.onmessage = (event) => {
-            displayMessage(event.data);
+            displayMessage("[Server]: " + event.data);
         };
 
         // エラー発生時の処理
@@ -64,7 +64,7 @@
         // 受信したメッセージをページに表示
         function displayMessage(message) {
             const newMessage = document.createElement("p");
-            newMessage.textContent = "[Server]: " + message;
+            newMessage.textContent = message;
             messagesDiv.appendChild(newMessage);
             messagesDiv.scrollTop = messagesDiv.scrollHeight;  // 最新のメッセージを表示
         }
