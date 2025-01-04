@@ -73,6 +73,8 @@
         function displayInfo(message) {
             document.getElementById("name").innerHTML = nameInput.value;
             document.getElementById("age").innerHTML = ageInput.value;
+            nameInput.value = "";
+            ageInput.value = "";
             nameInput.disabled = true;
             ageInput.disabled = true;
         }
@@ -91,8 +93,6 @@
 
             // 入力欄をクリア
             document.getElementById("messageInput").value = "";
-            document.getElementById("name").value = "";
-            document.getElementById("age").value = "";
         });
     </script>
 </body>
