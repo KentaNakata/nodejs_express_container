@@ -69,7 +69,7 @@ class PlayerMatchingMaker {
     });
   }
 
-  #acquireLock() {
+  #acquireLock(interval_ms = 10) {
     // 排他制御用のロックをする
     return new Promise((resolve) => {
       const check = () => {
@@ -78,12 +78,12 @@ class PlayerMatchingMaker {
           this.#lock = true;
           resolve();
         } else {
-          //既にロックがかかっていれば、10ms 待機して check を再試行する
-          setTimeout(check, 10);
+          //既にロックがかかっていれば、待機して check を再試行する
+          setTimeout(check, interval_ms);
         }
       };
 
-      // check の実行
+      // check を再帰実行する
       check();
     });
   }

@@ -23,6 +23,7 @@ wss.on("listening", () => {
 
 //サーバーにクライアントが接続したときの処理
 wss.on("connection", async (ws) => {
+  const checkInterval_ms = 5000;
   console.log("A new player connected to WebSocket server");
   ws.send("Please send your name and age");
 
@@ -42,11 +43,12 @@ wss.on("connection", async (ws) => {
         `Thank you for your information (You: name=${player.name}, age=${player.age})`
       );
 
-      // 待機を終了して処理を続ける
+      // 待機を終了して処理を続行
       resolve();
     });
   });
 
+  //切断時の処理
   ws.on("close", () => {
     console.log("Player disconnected");
     ws.send("Good bye");
@@ -59,7 +61,7 @@ wss.on("connection", async (ws) => {
       ws.send("We are finding your opponent...");
 
       //待機
-      await new Promise((resolve) => setTimeout(resolve, 5000));
+      await new Promise((resolve) => setTimeout(resolve, checkInterval_ms));
 
       //退出確認
       if (player.state === Player.stateType.exited) {
@@ -85,8 +87,11 @@ wss.on("connection", async (ws) => {
 
     //対戦
     while (true) {
+      //処理
+      //
+
       //待機
-      await new Promise((resolve) => setTimeout(resolve, 5000));
+      await new Promise((resolve) => setTimeout(resolve, checkInterval_ms));
 
       //退出確認
       if (player.state === Player.stateType.exited) {
@@ -97,13 +102,11 @@ wss.on("connection", async (ws) => {
       if (player.state === Player.stateType.free) {
         break;
       }
-
-      //接続確認
-      ws.ping();
     }
 
     ws.send(`The battle finished (Score: ${player.score})`);
 
+    //再戦
     player.restartFindingOpponent();
     pmm.addPlayer(player);
   }
@@ -119,7 +122,12 @@ wss.on("close", () => {
   console.log("WebSocket server is closing");
 });
 
-//クライアント用タイトル画面
+//クライアント用UI
 express_test.get("/play", (req, res, next) => {
   res.render("title");
+});
+
+//クライアント用UI
+express_test.get("/play2", (req, res, next) => {
+  res.sendFile("/usr/src/app/game/matching/index.html");
 });

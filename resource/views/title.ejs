@@ -42,35 +42,35 @@
         // WebSocketの接続
         const socket = new WebSocket("ws://localhost:8080");
 
-        // 接続が開いた時の処理
+        // 接続時の処理
         socket.onopen = () => {
             displayMessage("Connected to WebSocket server");
         };
 
-        // メッセージ受信時の処理
+        // 受信時の処理
         socket.onmessage = (event) => {
             displayMessage("[Server]: " + event.data);
         };
 
-        // エラー発生時の処理
+        // エラー時の処理
         socket.onerror = (error) => {
             displayMessage("WebSocket Error: ", error);
         };
 
-        // 接続が閉じられた時の処理
+        // 切断時の処理
         socket.onclose = () => {
             displayMessage("WebSocket connection closed");
         };
 
-        // 受信したメッセージをページに表示
+        // メッセージの表示
         function displayMessage(message) {
             const newMessage = document.createElement("p");
             newMessage.textContent = message;
             messagesDiv.appendChild(newMessage);
-            messagesDiv.scrollTop = messagesDiv.scrollHeight;  // 最新のメッセージを表示
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;  // 最新メッセージの表示
         }
 
-        // 自分の情報をページに表示
+        // 自分の情報の表示
         function displayInfo(message) {
             document.getElementById("name").innerHTML = String(nameInput.value);
             document.getElementById("age").innerHTML = Math.max(parseInt(ageInput.value, 10), 0);
@@ -89,10 +89,10 @@
                 age: document.getElementById("age").innerHTML
             };
 
-            // メッセージを送信
+            // データの送信
             socket.send(JSON.stringify(data));
 
-            // 入力欄をクリア
+            // 入力欄のクリア
             messageInput.value = "";
         });
     </script>
