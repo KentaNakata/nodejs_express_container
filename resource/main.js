@@ -36,7 +36,7 @@ wss.on("connection", async (ws) => {
       player = pmm.addPlayerByInfo(parsedInfo);
 
       console.log(
-        `Player sent the information (name=${player.name}, age=${player.age})`
+        `A player sent the information (name=${player.name}, age=${player.age})`
       );
       ws.send(
         `Thank you for your information (You: name=${player.name}, age=${player.age})`

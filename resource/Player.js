@@ -110,7 +110,7 @@ class Player {
       this.state !== Player.stateType.active &&
       this.state !== Player.stateType.waiting
     ) {
-      throw new Error("This player is not matching");
+      throw new Error("This player is not currently matched with anyone");
     }
 
     //スコアを加算する
@@ -123,7 +123,7 @@ class Player {
     this.#lastOpponent = this.opponent;
     this.#opponent = null;
 
-    this.#pushLog(`Matching has been over (Score: ${this.#score})`);
+    this.#pushLog(`Matching has ended (Score: ${this.#score})`);
   }
 
   restartFindingOpponent() {
@@ -142,7 +142,7 @@ class Player {
       this.state !== Player.stateType.findingOpponent &&
       this.state !== Player.stateType.free
     ) {
-      throw new Error("This player is not in a state to exit");
+      throw new Error("This player cannot exit in their current state");
     }
 
     //exited 状態にする
