@@ -23,14 +23,13 @@ wss.on("listening", () => {
 
 //サーバーにクライアントが接続したときの処理
 wss.on("connection", async (ws) => {
-  const checkInterval_ms = 5000;
   console.log("A new player connected to WebSocket server");
   ws.send("Please send your name and age");
 
   let player = null;
 
+  // プレイヤー情報の待機・受信
   await new Promise((resolve) => {
-    // プレイヤー情報の待機・受信
     ws.on("message", (info) => {
       // プレイヤーの登録
       const parsedInfo = JSON.parse(info.toString());
@@ -50,8 +49,7 @@ wss.on("connection", async (ws) => {
 
   //切断時の処理
   ws.on("close", () => {
-    console.log("Player disconnected");
-    ws.send("Good bye");
+    console.log("A player disconnected");
     player.exitAnyway();
   });
 
@@ -61,6 +59,7 @@ wss.on("connection", async (ws) => {
       ws.send("We are finding your opponent...");
 
       //待機
+      const checkInterval_ms = 5000;
       await new Promise((resolve) => setTimeout(resolve, checkInterval_ms));
 
       //退出確認
@@ -91,6 +90,7 @@ wss.on("connection", async (ws) => {
       //
 
       //待機
+      const checkInterval_ms = 5000;
       await new Promise((resolve) => setTimeout(resolve, checkInterval_ms));
 
       //退出確認

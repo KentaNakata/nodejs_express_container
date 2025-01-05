@@ -20,25 +20,28 @@
     <h1>Matching Game</h1>
 
     <b>Message:</b><br>
-    <div id="messages"></div>
+    <div id="messagesDiv"></div>
 
     <b>Message Input:</b><br>
     <textarea id="messageInput" placeholder="Type your message here..."></textarea><br>
 
-    <b>Name:</b> <span id="name">undefined</span><br>
+    <b>Name:</b> <span id="name"></span><br>
     <textarea id="nameInput" placeholder="Type your name here..."></textarea><br>
 
-    <b>Age:</b> <span id="age">undefined</span><br>
+    <b>Age:</b> <span id="age"></span><br>
     <textarea id="ageInput" placeholder="Type your age here..."></textarea><br>
 
     <br><button id="sendButton">Send</button><br>
 
     <script>
-        messagesDiv = document.getElementById("messages");
-        messageInput = document.getElementById("messageInput");
-        nameInput = document.getElementById("nameInput");
-        ageInput = document.getElementById("ageInput");
+        const messagesDiv = document.getElementById("messagesDiv");
+        const messageInput = document.getElementById("messageInput");
+        const nameInput = document.getElementById("nameInput");
+        const ageInput = document.getElementById("ageInput");
+        const sendButton = document.getElementById("sendButton");
 
+        let name = null;
+        let age = null;
         // WebSocketの接続
         const socket = new WebSocket("ws://localhost:8080");
 
@@ -70,23 +73,26 @@
             messagesDiv.scrollTop = messagesDiv.scrollHeight;  // 最新メッセージの表示
         }
 
-        // 自分の情報の表示
-        function displayInfo(message) {
-            document.getElementById("name").innerHTML = String(nameInput.value);
-            document.getElementById("age").innerHTML = Math.max(parseInt(ageInput.value, 10), 0);
+        // 自分の情報の設定
+        function setInfo(message) {
+            name = String(nameInput.value)
+            age = Math.max(parseInt(ageInput.value, 10), 0)
+            document.getElementById("name").innerHTML = name;
+            document.getElementById("age").innerHTML = age;
+        }
+
+        // 送信ボタンのクリック処理
+        sendButton.addEventListener("click", () => {
+            setInfo();
             nameInput.value = "";
             ageInput.value = "";
             nameInput.disabled = true;
             ageInput.disabled = true;
-        }
 
-        // 送信ボタンのクリック処理
-        document.getElementById("sendButton").addEventListener("click", () => {
-            displayInfo();
             const data = {
                 message: messageInput.value,
-                name: document.getElementById("name").innerHTML,
-                age: document.getElementById("age").innerHTML
+                name: name,
+                age: age,
             };
 
             // データの送信
