@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Matching Game</title>
     <style>
-        #messages {
+        #messagesDiv {
             margin-bottom: 20px;
             border: 1px solid #ccc;
             padding: 10px;
@@ -75,8 +75,8 @@
 
         // 自分の情報の設定
         function setInfo(message) {
-            name = String(nameInput.value)
-            age = Math.max(parseInt(ageInput.value, 10), 0)
+            name = String(nameInput.value);
+            age = Math.max(parseInt(ageInput.value, 10), 0);
             document.getElementById("name").innerHTML = name;
             document.getElementById("age").innerHTML = age;
         }

@@ -100,9 +100,7 @@ class PlayerMatchingMaker {
 
     // 定期的に makeMatching を実行する
     this.#intervalId = setInterval(() => {
-      this.makeMatching().catch((error) => {
-        console.error("Error in makeMatching: ", error);
-      });
+      this.makeMatching();
     }, interval_ms);
   }
 

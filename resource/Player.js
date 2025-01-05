@@ -12,7 +12,7 @@ class Player {
     this.#id = parseInt(id, 10); //識別子は整数
     this.#name = String(name); //名前は文字列
     this.#age = Math.max(parseInt(age, 10), 0); //年齢は自然数
-    this.#score = parseFloat(initialScore, 10); //スコアは実数
+    this.#score = parseInt(initialScore, 10); //スコアは整数
   }
 
   get id() {
@@ -114,7 +114,7 @@ class Player {
     }
 
     //スコアを加算する
-    this.#score += parseFloat(givenScore, 10);
+    this.#score += parseInt(givenScore, 10);
 
     //free 状態にする
     this.#setState(Player.stateType.free);
