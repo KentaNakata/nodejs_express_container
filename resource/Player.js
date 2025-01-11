@@ -3,7 +3,9 @@ class Player {
   #name;
   #age;
   #score;
-  #state = Player.stateType.findingOpponent; //プレイヤーの状態
+  #state = Player.stateType.findingOpponent; //プレイヤーの状態　//TODO 構造化
+  #X = null; //プレイヤーのX座標
+  #Y = null; //プレイヤーのY座標
   #opponent = null; //対戦相手
   #lastOpponent = null; //直前の対戦相手
   #log = [];
@@ -30,6 +32,12 @@ class Player {
   get state() {
     return this.#state;
   }
+  get X() {
+    return this.#X;
+  }
+  get Y() {
+    return this.#Y;
+  }
   get opponent() {
     return this.#opponent;
   }
@@ -43,6 +51,11 @@ class Player {
   #setState(state) {
     this.#state = state;
     this.#pushLog(`The state is now ${state}`);
+  }
+
+  setXY(X, Y) {
+    this.#X = parseInt(X, 10);
+    this.#Y = parseInt(Y, 10);
   }
 
   #pushLog(message) {

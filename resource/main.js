@@ -23,8 +23,12 @@ wss.on("listening", () => {
 
 //サーバーにクライアントが接続したときの処理
 wss.on("connection", async (ws) => {
+  function wsSend(data) {
+    ws.send(JSON.stringify(data));
+  }
+
   console.log("A new player connected to WebSocket server");
-  ws.send("Please send your name and age");
+  wsSend({ message: "Please send your name and age" });
 
   let player = null;
 
@@ -38,9 +42,12 @@ wss.on("connection", async (ws) => {
       console.log(
         `A player sent the information (name=${player.name}, age=${player.age})`
       );
-      ws.send(
-        `Thank you for your information (You: name=${player.name}, age=${player.age})`
-      );
+      wsSend({ message: "Thank you for your information" });
+      wsSend({
+        message: `(You: name=${player.name}, age=${player.age}, score=${player.score})`,
+        score: player.score,
+        state: player.state,
+      });
 
       // 待機を終了して処理を続行
       resolve();
@@ -54,9 +61,21 @@ wss.on("connection", async (ws) => {
   });
 
   while (true) {
+    //受信時の処理の変更
+    ws.removeAllListeners("message");
+    ws.on("message", (data) => {
+      wsSend({
+        message: "Your message was discarded",
+        state: player.state,
+      });
+    });
+
     //マッチング
     while (true) {
-      ws.send("We are finding your opponent...");
+      wsSend({
+        message: "We are finding your opponent...",
+        state: player.state,
+      });
 
       //待機
       const checkInterval_ms = 5000;
@@ -79,10 +98,34 @@ wss.on("connection", async (ws) => {
       ws.ping();
     }
 
-    ws.send(
-      `We found your opponent (Your opponent: name=${player.opponent.name}, age=${player.opponent.age})`
-    );
-    ws.send(`Your current state: ${player.state}`);
+    wsSend({ message: "We found your opponent" });
+    wsSend({
+      message: `(Your opponent: name=${player.opponent.name}, age=${player.opponent.age})`,
+      opponentName: player.opponent.name,
+      opponentAge: player.opponent.age,
+    });
+    wsSend({
+      message: `Your current state: ${player.state}`,
+      state: player.state,
+    });
+
+    //受信時の処理の変更
+    ws.removeAllListeners("message");
+    ws.on("message", (data) => {
+      // プレイヤーの現在情報の受信
+      const parsedData = JSON.parse(data.toString());
+      player.setXY(parsedData.X, parsedData.Y);
+
+      //対戦相手が退出している可能性があるため存在の確認
+      const opponent = player.opponent || { X: NaN, Y: NaN };
+
+      //現在情報の送信
+      wsSend({
+        state: player.state,
+        opponentX: opponent.X,
+        opponentY: opponent.Y,
+      });
+    });
 
     //対戦
     while (true) {
@@ -104,7 +147,11 @@ wss.on("connection", async (ws) => {
       }
     }
 
-    ws.send(`The battle finished (Score: ${player.score})`);
+    wsSend({
+      message: `The battle finished (Score: ${player.score})`,
+      score: player.score,
+      state: player.state,
+    });
 
     //再戦
     player.restartFindingOpponent();

@@ -31,6 +31,18 @@
     <b>Age:</b> <span id="age"></span><br>
     <textarea id="ageInput" placeholder="Type your age here..."></textarea><br>
 
+    <b>Score:</b> <span id="score"></span><br>
+
+    <b>State:</b> <span id="state"></span><br>
+
+    <b>Opponent Name:</b> <span id="opponentName"></span><br>
+    
+    <b>Opponent Age:</b> <span id="opponentAge"></span><br>
+
+    <b>Opponent X:</b> <span id="opponentX"></span><br>
+
+    <b>Opponent Y:</b> <span id="opponentY"></span><br>
+
     <br><button id="sendButton">Send</button><br>
 
     <script>
@@ -39,9 +51,17 @@
         const nameInput = document.getElementById("nameInput");
         const ageInput = document.getElementById("ageInput");
         const sendButton = document.getElementById("sendButton");
+        let intervalId = null;
 
-        let name = null;
+        let name = null; //TODO 構造化
         let age = null;
+        let score = null;
+        let state = null;
+        let opponentName = null;
+        let opponentAge = null;
+        let opponentX = null;
+        let opponentY = null;
+
         // WebSocketの接続
         const socket = new WebSocket("ws://localhost:8080");
 
@@ -52,7 +72,48 @@
 
         // 受信時の処理
         socket.onmessage = (event) => {
-            displayMessage("[Server]: " + event.data);
+            const parsedData = JSON.parse(event.data);
+
+            if ("message" in parsedData) {
+                displayMessage("[Server]: " + String(parsedData.message));
+            }
+            if ("score" in parsedData) {
+                score = parseInt(parsedData.score, 10);
+                document.getElementById("score").innerHTML = score;
+            }
+            if ("state" in parsedData) {
+                state = String(parsedData.state);
+                document.getElementById("state").innerHTML = state;
+                if (state === "active" || state === "waiting"){
+                    startInterval();
+                } else {
+                    stopInterval();
+                    opponentName = null;
+                    opponentAge = null;
+                    opponentX = null;
+                    opponentY = null;
+                    document.getElementById("opponentName").innerHTML = "";
+                    document.getElementById("opponentAge").innerHTML = "";
+                    document.getElementById("opponentX").innerHTML = "";
+                    document.getElementById("opponentY").innerHTML = "";
+                }
+            }
+            if ("opponentName" in parsedData) {
+                opponentName = String(parsedData.opponentName);
+                document.getElementById("opponentName").innerHTML = opponentName;
+            }
+            if ("opponentAge" in parsedData) {
+                opponentAge = parseInt(parsedData.opponentAge, 10);
+                document.getElementById("opponentAge").innerHTML = opponentAge;
+            }
+            if ("opponentX" in parsedData) {
+                opponentX = parseInt(parsedData.opponentX, 10);
+                document.getElementById("opponentX").innerHTML = opponentX;
+            }
+            if ("opponentY" in parsedData) {
+                opponentY = parseInt(parsedData.opponentY, 10);
+                document.getElementById("opponentY").innerHTML = opponentY;
+            }
         };
 
         // エラー時の処理
@@ -81,13 +142,14 @@
             document.getElementById("age").innerHTML = age;
         }
 
-        // 送信ボタンのクリック処理
+        // 送信処理
         sendButton.addEventListener("click", () => {
             setInfo();
             nameInput.value = "";
             ageInput.value = "";
             nameInput.disabled = true;
             ageInput.disabled = true;
+            sendButton.disabled = true;
 
             const data = {
                 message: messageInput.value,
@@ -101,6 +163,31 @@
             // 入力欄のクリア
             messageInput.value = "";
         });
+
+        // 定期送信の開始
+        function startInterval(interval_ms = 2000) {
+            if (intervalId !== null) {
+                return;
+            }
+            intervalId = setInterval(() => {
+                const data = {
+                    X: null,
+                    Y: null,
+                };
+
+                // データの送信
+                socket.send(JSON.stringify(data));
+            }, interval_ms);
+        }
+
+        // 定期送信の停止
+        function stopInterval() {
+            if (intervalId === null) {
+                return;
+            }
+            clearInterval(intervalId);
+            intervalId = null;
+        }
     </script>
 </body>
 
