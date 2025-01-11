@@ -117,14 +117,19 @@ wss.on("connection", async (ws) => {
       player.setXY(parsedData.X, parsedData.Y);
 
       //対戦相手が退出している可能性があるため存在の確認
-      const opponent = player.opponent || { X: NaN, Y: NaN };
-
-      //現在情報の送信
-      wsSend({
-        state: player.state,
-        opponentX: opponent.X,
-        opponentY: opponent.Y,
-      });
+      if (player.opponent) {
+        //現在情報の送信
+        wsSend({
+          state: player.state,
+          opponentX: player.opponent.X,
+          opponentY: player.opponent.Y,
+        });
+      } else {
+        //現在情報の送信
+        wsSend({
+          state: player.state,
+        });
+      }
     });
 
     //対戦
