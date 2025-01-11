@@ -124,10 +124,5 @@ wss.on("close", () => {
 
 //クライアント用UI
 express_test.get("/play", (req, res, next) => {
-  res.render("title");
-});
-
-//クライアント用UI
-express_test.get("/play2", (req, res, next) => {
-  res.sendFile("/usr/src/app/game/matching/index.html");
+  res.render("simpleUI");
 });
