@@ -1,107 +1,112 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Matching Game</title>
     <style>
-        #messagesDiv {
-            margin-bottom: 20px;
-            border: 1px solid #ccc;
-            padding: 10px;
-            height: 200px;
-            overflow-y: scroll;
-        }
+      #messagesDiv {
+        margin-bottom: 20px;
+        border: 1px solid #ccc;
+        padding: 10px;
+        height: 200px;
+        overflow-y: scroll;
+      }
     </style>
-</head>
+  </head>
 
-<body>
+  <body>
     <h1>Matching Game</h1>
 
-    <b>Message:</b><br>
+    <b>Message:</b><br />
     <div id="messagesDiv"></div>
 
-    <b>Message Input:</b><br>
-    <textarea id="messageInput" placeholder="Type your message here..."></textarea><br>
+    <b>Message Input:</b><br />
+    <textarea
+      id="messageInput"
+      placeholder="Type your message here..."
+    ></textarea
+    ><br />
 
-    <b>Name:</b> <span id="name"></span><br>
-    <textarea id="nameInput" placeholder="Type your name here..."></textarea><br>
+    <b>Name:</b> <span id="name"></span><br />
+    <textarea id="nameInput" placeholder="Type your name here..."></textarea
+    ><br />
 
-    <b>Age:</b> <span id="age"></span><br>
-    <textarea id="ageInput" placeholder="Type your age here..."></textarea><br>
+    <b>Age:</b> <span id="age"></span><br />
+    <textarea id="ageInput" placeholder="Type your age here..."></textarea
+    ><br />
 
-    <br><button id="sendButton">Send</button><br>
+    <br /><button id="sendButton">Send</button><br />
 
     <script>
-        const messagesDiv = document.getElementById("messagesDiv");
-        const messageInput = document.getElementById("messageInput");
-        const nameInput = document.getElementById("nameInput");
-        const ageInput = document.getElementById("ageInput");
-        const sendButton = document.getElementById("sendButton");
+      const messagesDiv = document.getElementById("messagesDiv");
+      const messageInput = document.getElementById("messageInput");
+      const nameInput = document.getElementById("nameInput");
+      const ageInput = document.getElementById("ageInput");
+      const sendButton = document.getElementById("sendButton");
 
-        let name = null;
-        let age = null;
-        // WebSocketの接続
-        const socket = new WebSocket("ws://localhost:8080");
+      let name = null;
+      let age = null;
+      // WebSocketの接続
+      const socket = new WebSocket("ws://localhost:8080");
 
-        // 接続時の処理
-        socket.onopen = () => {
-            displayMessage("Connected to WebSocket server");
+      // 接続時の処理
+      socket.onopen = () => {
+        displayMessage("Connected to WebSocket server");
+      };
+
+      // 受信時の処理
+      socket.onmessage = (event) => {
+        displayMessage("[Server]: " + event.data);
+      };
+
+      // エラー時の処理
+      socket.onerror = (error) => {
+        displayMessage("WebSocket Error: ", error);
+      };
+
+      // 切断時の処理
+      socket.onclose = () => {
+        displayMessage("WebSocket connection closed");
+      };
+
+      // メッセージの表示
+      function displayMessage(message) {
+        const newMessage = document.createElement("p");
+        newMessage.textContent = message;
+        messagesDiv.appendChild(newMessage);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight; // 最新メッセージの表示
+      }
+
+      // 自分の情報の設定
+      function setInfo(message) {
+        name = String(nameInput.value);
+        age = Math.max(parseInt(ageInput.value, 10), 0);
+        document.getElementById("name").innerHTML = name;
+        document.getElementById("age").innerHTML = age;
+      }
+
+      // 送信処理
+      sendButton.addEventListener("click", () => {
+        setInfo();
+        // 入力欄のクリア
+        messageInput.value = "";
+        nameInput.value = "";
+        ageInput.value = "";
+        messageInput.disabled = true;
+        nameInput.disabled = true;
+        ageInput.disabled = true;
+        sendButton.disabled = true;
+
+        const data = {
+          message: messageInput.value,
+          name: name,
+          age: age,
         };
 
-        // 受信時の処理
-        socket.onmessage = (event) => {
-            displayMessage("[Server]: " + event.data);
-        };
-
-        // エラー時の処理
-        socket.onerror = (error) => {
-            displayMessage("WebSocket Error: ", error);
-        };
-
-        // 切断時の処理
-        socket.onclose = () => {
-            displayMessage("WebSocket connection closed");
-        };
-
-        // メッセージの表示
-        function displayMessage(message) {
-            const newMessage = document.createElement("p");
-            newMessage.textContent = message;
-            messagesDiv.appendChild(newMessage);
-            messagesDiv.scrollTop = messagesDiv.scrollHeight;  // 最新メッセージの表示
-        }
-
-        // 自分の情報の設定
-        function setInfo(message) {
-            name = String(nameInput.value);
-            age = Math.max(parseInt(ageInput.value, 10), 0);
-            document.getElementById("name").innerHTML = name;
-            document.getElementById("age").innerHTML = age;
-        }
-
-        // 送信ボタンのクリック処理
-        sendButton.addEventListener("click", () => {
-            setInfo();
-            nameInput.value = "";
-            ageInput.value = "";
-            nameInput.disabled = true;
-            ageInput.disabled = true;
-
-            const data = {
-                message: messageInput.value,
-                name: name,
-                age: age,
-            };
-
-            // データの送信
-            socket.send(JSON.stringify(data));
-
-            // 入力欄のクリア
-            messageInput.value = "";
-        });
+        // データの送信
+        socket.send(JSON.stringify(data));
+      });
     </script>
-</body>
-
+  </body>
 </html>
