@@ -1,0 +1,46 @@
+# save, movies, effectsのフォルダはすべて無視
+movies/
+save/
+effects/
+
+
+# imgフォルダ
+img/battlebacks1/
+img/battlebacks2/
+img/enemies/
+img/sv_actors/
+img/sv_enemies/
+img/titles1/
+img/titles2/
+img/characters/*
+img/faces/*
+img/parallaxes/*
+img/pictures/*
+!img/characters/!add/
+!img/characters/$add/
+!img/faces/add/
+!img/parallaxes/add/
+!img/pictures/add/
+
+# audioフォルダ
+audio/bgm/*
+audio/bgs/*
+audio/me/*
+audio/se/*
+!audio/bgm/add/
+!audio/bgs/add/
+!audio/me/add/
+!audio/se/add/
+!audio/se/komori_suspicion1.ogg
+!audio/se/komori_suspicion2.ogg
+!audio/se/komori_suspicion3.ogg
+!audio/se/komori_piano-chord3.ogg
+!audio/se/lab_cute1.ogg
+!audio/se/lab_cute2.ogg
+!audio/se/lab_cute3.ogg
+
+# debug.log
+debug.log
+
+# game.rmmzproject
+game.rmmzproject

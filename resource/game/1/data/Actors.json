@@ -1,0 +1,13 @@
+[
+null,
+{"id":1,"battlerName":"","characterIndex":0,"characterName":"$add/$noah0","classId":1,"equips":[],"faceIndex":0,"faceName":"add/noah0","traits":[{"code":41,"dataId":1,"value":1}],"initialLevel":12,"maxLevel":99,"name":"ノア","nickname":"方舟を導く少女","note":"","profile":""},
+{"id":2,"battlerName":"","characterIndex":1,"characterName":"$add/$canoe0","classId":2,"equips":[],"faceIndex":0,"faceName":"add/canoe0","traits":[{"code":41,"dataId":1,"value":1}],"initialLevel":12,"maxLevel":99,"name":"カノエ・クリモワール","nickname":"みならい魔導士","note":"","profile":""},
+{"id":3,"battlerName":"","characterIndex":1,"characterName":"$add/$luna0","classId":3,"equips":[],"faceIndex":0,"faceName":"add/luna0","traits":[{"code":41,"dataId":1,"value":1}],"initialLevel":5,"maxLevel":99,"name":"アッシュ・ルナ・クリモワール","nickname":"黒猫","note":"","profile":""},
+{"id":4,"battlerName":"","characterIndex":2,"characterName":"$add/$noir0","classId":4,"equips":[],"faceIndex":0,"faceName":"add/noir0","traits":[{"code":41,"dataId":1,"value":1}],"initialLevel":12,"maxLevel":99,"name":"ノワール","nickname":"黒の亡霊","note":"","profile":""},
+{"id":5,"battlerName":"","characterIndex":3,"characterName":"$add/$astra0","classId":2,"equips":[],"faceIndex":4,"faceName":"add/astra0","traits":[{"code":41,"dataId":1,"value":1}],"initialLevel":99,"maxLevel":99,"name":"アストラ・クリモワール","nickname":"伝説の魔導士","note":"","profile":""},
+{"id":6,"battlerName":"","characterIndex":0,"characterName":"","classId":1,"equips":[0,0,0,0,0],"faceIndex":0,"faceName":"","traits":[],"initialLevel":1,"maxLevel":99,"name":"","nickname":"","note":"","profile":""},
+{"id":7,"battlerName":"","characterIndex":1,"characterName":"$add/$canoe1","classId":2,"equips":[],"faceIndex":0,"faceName":"add/canoe1","traits":[{"code":41,"dataId":1,"value":1}],"initialLevel":12,"maxLevel":99,"name":"カノエ・クリモワール","nickname":"みならい魔導士","note":"","profile":""},
+{"id":8,"battlerName":"","characterIndex":1,"characterName":"$add/$luna1","classId":3,"equips":[],"faceIndex":0,"faceName":"add/luna1","traits":[{"code":41,"dataId":1,"value":1}],"initialLevel":5,"maxLevel":99,"name":"アッシュ・ルナ・クリモワール","nickname":"黒猫","note":"","profile":""},
+{"id":9,"battlerName":"","characterIndex":2,"characterName":"$add/$noir0","classId":4,"equips":[],"faceIndex":0,"faceName":"add/noir0","traits":[{"code":41,"dataId":1,"value":1}],"initialLevel":12,"maxLevel":99,"name":"？？？","nickname":"黒の亡霊","note":"","profile":""},
+{"id":10,"battlerName":"","characterIndex":0,"characterName":"","classId":1,"equips":[0,0,0,0,0],"faceIndex":0,"faceName":"","traits":[],"initialLevel":1,"maxLevel":99,"name":"","nickname":"","note":"","profile":""}
+]
