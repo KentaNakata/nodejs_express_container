@@ -50,12 +50,6 @@
  * @parent receive
  * @default 3000
  *
- * @param opponentEventName
- * @text 対戦相手のイベント名
- * @type string
- * @parent receive
- * @default 対戦相手
- *
  * @param opponentEnabledSwitchId
  * @text 対戦相手が有効かどうかが格納されるスイッチID
  * @type number
@@ -182,18 +176,6 @@
         opponentY = parseInt(parsedData.opponentY, 10);
       }
 
-      if (!opponentEventName) {
-        return;
-      }
-
-      const opponentEvent = $gameMap
-        .events()
-        .find((event) => event && event.name === opponentEventName);
-
-      if (!opponentEvent) {
-        return;
-      }
-
       function isNullOrNaN(value) {
         return value === null || isNaN(value); //isNaN(null) = isNaN(0) = false であることに注意
       }
@@ -201,23 +183,40 @@
       if (isNullOrNaN(opponentX) || isNullOrNaN(opponentY)) {
         if (opponentEnabledSwitchId >= 1)
           $gameSwitches.setValue(opponentEnabledSwitchId, false);
-        //opponentEvent.erase();
+        return;
       } else {
         if (opponentEnabledSwitchId >= 1)
           $gameSwitches.setValue(opponentEnabledSwitchId, true);
-        //opponentEvent.refresh();
-        moveEvent(opponentEvent, opponentX, opponentY);
       }
+
+      const opponentEvent = $gameMap.events().find((event) => {
+        return (
+          event &&
+          event.hasOwnProperty("_commentParams") &&
+          event._commentParams.hasOwnProperty("opponent")
+        );
+      });
+      if (!opponentEvent) {
+        return;
+      }
+
+      moveEvent(opponentEvent, opponentX, opponentY);
     };
 
     // エラー時の処理
     socket.onerror = (error) => {
       receiveMessage("WebSocket Error: ", error);
+
+      resetVars();
+      stopInterval();
     };
 
     // 切断時の処理
     socket.onclose = () => {
       receiveMessage("WebSocket connection closed");
+
+      resetVars();
+      stopInterval();
     };
 
     //イベントの移動
@@ -364,9 +363,6 @@
   }
 
   function close() {
-    resetVars();
-    stopInterval();
-
     // 切断
     if (socket) {
       socket.close();

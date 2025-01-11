@@ -124,11 +124,15 @@
       // エラー時の処理
       socket.onerror = (error) => {
         displayMessage("WebSocket Error: ", error);
+
+        stopInterval();
       };
 
       // 切断時の処理
       socket.onclose = () => {
         displayMessage("WebSocket connection closed");
+
+        stopInterval();
       };
 
       // メッセージの表示
