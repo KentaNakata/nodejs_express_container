@@ -34,10 +34,19 @@ wss.on("connection", async (ws) => {
 
   // プレイヤー情報の待機・受信
   await new Promise((resolve) => {
-    ws.on("message", (info) => {
+    ws.on("message", (data) => {
+      const parsedData = JSON.parse(data.toString());
+
+      if (!("name" in parsedData) || !("age" in parsedData)) {
+        //必要なキーが無ければそれを通知
+        console.log('Warn: The keys "name" or "age" were not given');
+        wsSend({ message: 'Warn: The keys "name" or "age" were not given' });
+
+        return;
+      }
+
       // プレイヤーの登録
-      const parsedInfo = JSON.parse(info.toString());
-      player = pmm.addPlayerByInfo(parsedInfo);
+      player = pmm.addPlayerByInfo(parsedData.name, parsedData.age);
 
       console.log(
         `A player sent the information (name=${player.name}, age=${player.age})`
@@ -65,7 +74,7 @@ wss.on("connection", async (ws) => {
     ws.removeAllListeners("message");
     ws.on("message", (data) => {
       wsSend({
-        message: "Your message was discarded",
+        message: "Warn: Your message was discarded",
         state: player.state,
       });
     });
@@ -114,6 +123,17 @@ wss.on("connection", async (ws) => {
     ws.on("message", (data) => {
       // プレイヤーの現在情報の受信
       const parsedData = JSON.parse(data.toString());
+
+      if (!("X" in parsedData) || !("Y" in parsedData)) {
+        //必要なキーが無ければそれを通知
+        console.log('Warn: The keys "X" or "Y" were not given');
+        wsSend({
+          message: 'Warn: The keys "X" or "Y" were not given',
+        });
+
+        return;
+      }
+
       player.setXY(parsedData.X, parsedData.Y);
 
       //対戦相手が退出している可能性があるため存在の確認

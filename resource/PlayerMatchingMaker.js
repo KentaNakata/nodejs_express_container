@@ -30,14 +30,9 @@ class PlayerMatchingMaker {
     }
   }
 
-  addPlayerByInfo(info) {
-    //必要なキーが無ければエラー
-    if (!("name" in info) || !("age" in info)) {
-      throw new Error('The keys "name" or "age" were not given');
-    }
-
+  addPlayerByInfo(name, age) {
     //プレイヤーを作成して追加する
-    const player = new Player(this.#nextId, info.name, info.age);
+    const player = new Player(this.#nextId, name, age);
     this.addPlayer(player);
 
     return player;
