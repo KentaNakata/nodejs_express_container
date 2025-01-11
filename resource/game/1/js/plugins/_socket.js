@@ -1,6 +1,6 @@
 /*:
  * @target MZ
- * @plugindesc additional js script.
+ * @plugindesc WebSocket通信関連の処理
  * @author Nakaken
  *
  *
@@ -92,7 +92,7 @@
  */
 
 (() => {
-  const pluginName = "_add";
+  const pluginName = "_socket";
   const parameters = PluginManager.parameters(pluginName);
   const scoreVarId = parameters["scoreVarId"];
   const stateVarId = parameters["stateVarId"];

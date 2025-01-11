@@ -196,10 +196,10 @@ wss.on("close", () => {
 
 //クライアント用UI
 express_test.get("/play", (req, res, next) => {
-  res.render("title");
+  res.render("simpleUI");
 });
 
 //クライアント用UI
-express_test.get("/play2", (req, res, next) => {
-  res.sendFile("/usr/src/app/game/matching/index.html");
+express_test.get("/game/1/play", (req, res, next) => {
+  res.sendFile("/usr/src/app/game/1/index.html");
 });
