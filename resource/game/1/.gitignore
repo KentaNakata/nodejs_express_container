@@ -3,7 +3,6 @@ movies/
 save/
 effects/
 
-
 # imgフォルダ
 img/battlebacks1/
 img/battlebacks2/
@@ -39,8 +38,7 @@ audio/se/*
 !audio/se/lab_cute2.ogg
 !audio/se/lab_cute3.ogg
 
+!audio/bgs/clock.ogg
+
 # debug.log
 debug.log
-
-# game.rmmzproject
-game.rmmzproject
