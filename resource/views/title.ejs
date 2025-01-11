@@ -150,8 +150,12 @@
       // 送信処理
       sendButton.addEventListener("click", () => {
         setInfo();
+
+        // 入力欄のクリア
+        messageInput.value = "";
         nameInput.value = "";
         ageInput.value = "";
+        messageInput.disabled = true;
         nameInput.disabled = true;
         ageInput.disabled = true;
         sendButton.disabled = true;
@@ -164,9 +168,6 @@
 
         // データの送信
         socket.send(JSON.stringify(data));
-
-        // 入力欄のクリア
-        messageInput.value = "";
       });
 
       // 定期送信の開始

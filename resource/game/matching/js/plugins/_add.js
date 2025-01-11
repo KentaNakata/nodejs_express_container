@@ -1,14 +1,73 @@
-//=============================================================================
-// RPG Maker MZ - Alternative Save Screen
-//=============================================================================
-
 /*:
  * @target MZ
  * @plugindesc additional js script.
  * @author Nakaken
  *
+ *
+ *
+ * @param receive
+ * @text ■ 受信設定
+ *
+ * @param scoreVarId
+ * @text スコア受信時に内容が格納される変数ID
+ * @type number
+ * @parent receive
+ * @default 0
+ *
+ * @param stateVarId
+ * @text 状態受信時に内容が格納される変数ID
+ * @type number
+ * @parent receive
+ * @default 0
+ *
+ * @param opponentNameVarId
+ * @text 対戦相手の名前受信時に内容が格納される変数ID
+ * @type number
+ * @parent receive
+ * @default 0
+ *
+ * @param opponentAgeVarId
+ * @text 対戦相手の年齢受信時に内容が格納される変数ID
+ * @type number
+ * @parent receive
+ * @default 0
+ *
+ * @param messageVarId
+ * @text メッセージ受信時に内容が格納される変数ID
+ * @type number
+ * @parent receive
+ * @default 0
+ *
+ * @param messageCommonEventId
+ * @text メッセージ受信時に実行されるコモンイベントID
+ * @type number
+ * @parent receive
+ * @default 0
+ *
+ * @param releaseLockTime
+ * @text 1つのメッセージ受信時に実行されるコモンイベントのロック時間[ms]
+ * @type number
+ * @parent receive
+ * @default 3000
+ *
+ * @param opponentEventName
+ * @text 対戦相手のイベント名
+ * @type string
+ * @parent receive
+ * @default 対戦相手
+ *
+ * @param opponentEnabledSwitchId
+ * @text 対戦相手が有効かどうかが格納されるスイッチID
+ * @type number
+ * @parent receive
+ * @default 0
+ *
+ *
+ *
  * @command connect
  * @text 接続
+ *
+ *
  *
  * @command send
  * @text 送信
@@ -25,11 +84,27 @@
  * @text 年齢
  * @type string
  *
+ *
+ *
+ * @command close
+ * @text 切断
+ *
  */
 
 (() => {
   const pluginName = "_add";
-  let socket;
+  const parameters = PluginManager.parameters(pluginName);
+  const scoreVarId = parameters["scoreVarId"];
+  const stateVarId = parameters["stateVarId"];
+  const opponentNameVarId = parameters["opponentNameVarId"];
+  const opponentAgeVarId = parameters["opponentAgeVarId"];
+  const messageVarId = parameters["messageVarId"];
+  const messageCommonEventId = parameters["messageCommonEventId"];
+  const releaseLockTime = parameters["releaseLockTime"];
+  const opponentEventName = parameters["opponentEventName"];
+  const opponentEnabledSwitchId = parameters["opponentEnabledSwitchId"];
+
+  let socket = null;
   let lock = false;
   let intervalId = null;
 
@@ -42,13 +117,28 @@
   let opponentX = null;
   let opponentY = null;
 
+  //変数リセット
+  function resetVars() {
+    name = null;
+    age = null;
+    score = null;
+    state = null;
+    opponentName = null;
+    opponentAge = null;
+    opponentX = null;
+    opponentY = null;
+  }
+
   PluginManager.registerCommand(pluginName, "connect", (args) => {
+    resetVars();
+    stopInterval();
+
     // WebSocketの接続
     socket = new WebSocket("ws://localhost:8080");
 
     // 接続時の処理
     socket.onopen = () => {
-      displayMessage("Connected to WebSocket server");
+      receiveMessage("Connected to WebSocket server");
     };
 
     // 受信時の処理
@@ -56,17 +146,15 @@
       const parsedData = JSON.parse(event.data);
 
       if ("message" in parsedData) {
-        displayMessage("[Server]: " + String(parsedData.message));
+        receiveMessage("[Server]: " + String(parsedData.message));
       }
       if ("score" in parsedData) {
         score = parseInt(parsedData.score, 10);
-        const varID = 113;
-        $gameVariables.setValue(varID, score);
+        if (scoreVarId >= 1) $gameVariables.setValue(scoreVarId, score);
       }
       if ("state" in parsedData) {
         state = String(parsedData.state);
-        const varID = 114;
-        $gameVariables.setValue(varID, state);
+        if (stateVarId >= 1) $gameVariables.setValue(stateVarId, state);
         if (state === "active" || state === "waiting") {
           startInterval();
         } else {
@@ -79,13 +167,13 @@
       }
       if ("opponentName" in parsedData) {
         opponentName = String(parsedData.opponentName);
-        const varID = 115;
-        $gameVariables.setValue(varID, opponentName);
+        if (opponentNameVarId >= 1)
+          $gameVariables.setValue(opponentNameVarId, opponentName);
       }
       if ("opponentAge" in parsedData) {
         opponentAge = parseInt(parsedData.opponentAge, 10);
-        const varID = 116;
-        $gameVariables.setValue(varID, opponentAge);
+        if (opponentAgeVarId >= 1)
+          $gameVariables.setValue(opponentAgeVarId, opponentAge);
       }
       if ("opponentX" in parsedData) {
         opponentX = parseInt(parsedData.opponentX, 10);
@@ -94,19 +182,29 @@
         opponentY = parseInt(parsedData.opponentY, 10);
       }
 
-      const eventID = 27;
-      const opponentEvent = $gameMap.event(eventID);
+      if (!opponentEventName) {
+        return;
+      }
+
+      const opponentEvent = $gameMap
+        .events()
+        .find((event) => event && event.name === opponentEventName);
+
+      if (!opponentEvent) {
+        return;
+      }
 
       function isNullOrNaN(value) {
         return value === null || isNaN(value); //isNaN(null) = isNaN(0) = false であることに注意
       }
 
-      const switchID = 39;
       if (isNullOrNaN(opponentX) || isNullOrNaN(opponentY)) {
-        $gameSwitches.setValue(switchID, false);
+        if (opponentEnabledSwitchId >= 1)
+          $gameSwitches.setValue(opponentEnabledSwitchId, false);
         //opponentEvent.erase();
       } else {
-        $gameSwitches.setValue(switchID, true);
+        if (opponentEnabledSwitchId >= 1)
+          $gameSwitches.setValue(opponentEnabledSwitchId, true);
         //opponentEvent.refresh();
         moveEvent(opponentEvent, opponentX, opponentY);
       }
@@ -114,12 +212,12 @@
 
     // エラー時の処理
     socket.onerror = (error) => {
-      displayMessage("WebSocket Error: ", error);
+      receiveMessage("WebSocket Error: ", error);
     };
 
     // 切断時の処理
     socket.onclose = () => {
-      displayMessage("WebSocket connection closed");
+      receiveMessage("WebSocket connection closed");
     };
 
     //イベントの移動
@@ -168,7 +266,7 @@
     }
 
     // メッセージの表示
-    async function displayMessage(message) {
+    async function receiveMessage(message) {
       //$gameMessage.add(message);
 
       //PluginManager.callCommand(this, "LL_InfoPopupWIndow", "showMessage", {
@@ -177,13 +275,11 @@
 
       await acquireLock();
 
-      const varID = 117;
-      const commonEventID = 398;
-      $gameVariables.setValue(varID, message);
-      $gameTemp.reserveCommonEvent(commonEventID); //messageをポップアップ表示
+      if (messageVarId >= 1) $gameVariables.setValue(messageVarId, message);
+      if (messageCommonEventId >= 1)
+        $gameTemp.reserveCommonEvent(messageCommonEventId);
 
-      const releaseLockTime = 3000;
-      setTimeout(releaseLock, releaseLockTime);
+      if (releaseLockTime >= 1) setTimeout(releaseLock, releaseLockTime);
     }
 
     // ロック
@@ -221,6 +317,10 @@
   }
 
   PluginManager.registerCommand(pluginName, "send", (args) => {
+    if (!socket) {
+      return;
+    }
+
     setInfo(args);
 
     //制御文字の展開
@@ -238,6 +338,7 @@
     socket.send(JSON.stringify(data));
   });
 
+  // 定期送信の開始
   function startInterval(interval_ms = 2000) {
     if (intervalId !== null) {
       return;
@@ -253,6 +354,7 @@
     }, interval_ms);
   }
 
+  // 定期送信の停止
   function stopInterval() {
     if (intervalId === null) {
       return;
@@ -260,4 +362,18 @@
     clearInterval(intervalId);
     intervalId = null;
   }
+
+  function close() {
+    resetVars();
+    stopInterval();
+
+    // 切断
+    if (socket) {
+      socket.close();
+    }
+  }
+
+  PluginManager.registerCommand(pluginName, "close", (args) => {
+    close();
+  });
 })();
