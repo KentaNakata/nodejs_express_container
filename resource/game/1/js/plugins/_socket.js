@@ -95,7 +95,6 @@
   const messageVarId = parameters["messageVarId"];
   const messageCommonEventId = parameters["messageCommonEventId"];
   const releaseLockTime = parameters["releaseLockTime"];
-  const opponentEventName = parameters["opponentEventName"];
   const opponentEnabledSwitchId = parameters["opponentEnabledSwitchId"];
 
   let socket = null;
