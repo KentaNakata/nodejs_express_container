@@ -127,7 +127,9 @@
     stopInterval();
 
     // WebSocketの接続
-    socket = new WebSocket("ws://localhost:8080");
+    // const address = "ws://localhost:8080";
+    const address = "ws://192.168.137.1:8080";
+    socket = new WebSocket(address);
 
     // 接続時の処理
     socket.onopen = () => {
